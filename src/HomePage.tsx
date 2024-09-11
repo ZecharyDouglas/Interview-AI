@@ -4,7 +4,7 @@ import { generateClient } from "aws-amplify/data";
 
 const client = generateClient<Schema>();
 
-function App() {
+function HomePage() {
   const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
 
   useEffect(() => {
@@ -37,4 +37,4 @@ function App() {
   );
 }
 
-export default App;
+export default HomePage;
