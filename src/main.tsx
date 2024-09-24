@@ -4,7 +4,7 @@ import HomePage from "./HomePage.tsx";
 import "./index.css";
 import { Amplify } from "aws-amplify";
 import outputs from "../amplify_outputs.json";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 import SignUp from "./SignUp.js";
 import { createTheme } from "@mui/material/styles";
 import RouteError from "./RouteError.tsx";
@@ -136,7 +136,7 @@ const router = createBrowserRouter([
         navigation={navArr}
       >
         <DashboardLayout disableCollapsibleSidebar={true}>
-          <HomePage />
+          <Outlet />
         </DashboardLayout>
       </AppProvider>
     ),
