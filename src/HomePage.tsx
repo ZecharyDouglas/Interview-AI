@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { Schema } from "../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
+import { Outlet } from "react-router-dom";
 
 const client = generateClient<Schema>();
 
@@ -17,7 +18,7 @@ function HomePage() {
   //   client.models.Todo.create({ content: window.prompt("Todo content") });
   // }
 
-  return <main></main>;
+  return <main>{/* <Outlet /> */}</main>;
 }
 
 export default HomePage;

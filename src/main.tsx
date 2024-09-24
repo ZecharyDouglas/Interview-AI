@@ -11,8 +11,7 @@ import RouteError from "./RouteError.tsx";
 import { AppProvider } from "@toolpad/core/AppProvider";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
 import Owl from "./assets/Owl.png";
-import { SignInPage } from "@toolpad/core/SignInPage"; // Adjust path based on the actual export
-
+import Insights from "./Insights.tsx";
 Amplify.configure(outputs);
 
 const theme = createTheme({
@@ -141,6 +140,7 @@ const router = createBrowserRouter([
         </DashboardLayout>
       </AppProvider>
     ),
+    children: [{ path: "/insights", element: <Insights /> }],
     errorElement: <RouteError />,
   },
   {
@@ -157,6 +157,7 @@ const router = createBrowserRouter([
         <SignUp />
       </AppProvider>
     ),
+    errorElement: <RouteError />,
   },
 ]);
 
