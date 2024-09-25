@@ -7,6 +7,7 @@ export default function Insights() {
     4, 4, 5, 8, 8, 4, 4, 5, 8, 8,
   ]);
 
+  let fill = [];
   return (
     <div>
       <h1>Insights</h1>
@@ -16,11 +17,11 @@ export default function Insights() {
         columns={{ xs: 4, sm: 8, md: 12 }}
       >
         {confidenceValues.map((value, index) => (
-          <Grid item xs={1} sm={1} md={2} key={index}>
+          <Grid item xs={1} sm={1} md={3} key={index}>
             <RadialBarChart
               width={150}
               height={150}
-              innerRadius="70%"
+              innerRadius="60%"
               outerRadius="100%"
               data={[{ value, name: `Value ${index}` }]}
               startAngle={180}
@@ -28,7 +29,7 @@ export default function Insights() {
             >
               <RadialBar
                 minAngle={15}
-                label={{ fill: "#666", position: "insideStart" }}
+                label={{ fill: "#111", position: "insideStart" }}
                 background
                 clockWise={true}
                 dataKey="value"
