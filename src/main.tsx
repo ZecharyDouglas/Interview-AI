@@ -1,8 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
-import { Amplify } from "aws-amplify";
-import outputs from "../amplify_outputs.json";
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 import SignUp from "./SignUp.js";
 import { createTheme } from "@mui/material/styles";
@@ -11,7 +9,6 @@ import { AppProvider } from "@toolpad/core/AppProvider";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
 import Owl from "./assets/Owl.png";
 import Insights from "./Insights.tsx";
-Amplify.configure(outputs);
 
 const theme = createTheme({
   palette: {
