@@ -5,9 +5,15 @@ import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 import Button from "@mui/material/Button";
+import axios from "axios";
+import { useState } from "react";
 
 export default function SignUp() {
   const occupations = [
+    {
+      value: "select",
+      label: "Select",
+    },
     {
       value: "student",
       label: "Student",
@@ -21,6 +27,42 @@ export default function SignUp() {
       label: "Industry Professional",
     },
   ];
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [occupation, setOccupation] = useState("");
+
+  const handleName = (event) => {
+    setName(event.target.value);
+    console.log(name);
+  };
+  const handleEmail = (event) => {
+    setEmail(event.target.value);
+    console.log(email);
+  };
+  const handleOccupation = (event) => {
+    setOccupation(event.target.value);
+    console.log(occupation);
+  };
+  const handlePassword = (event) => {
+    setPassword(event.target.value);
+    console.log(password);
+  };
+
+  const signUpUser = async (event) => {
+    event.preventDefault();
+    try {
+      const response = await axios.post("http://127.0.0.1:5000/signup", {
+        name: name,
+        email: email,
+        password: password,
+        occupation: occupation,
+      });
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <div className="relative w-screen h-screen flex justify-center items-center ">
@@ -42,6 +84,8 @@ export default function SignUp() {
             id="outlined-name"
             label="Name"
             variant="outlined"
+            value={name}
+            onChange={handleName}
           />
           <TextField
             required
@@ -49,6 +93,8 @@ export default function SignUp() {
             label="Email"
             type="email"
             variant="outlined"
+            value={email}
+            onChange={handleEmail}
           />
           <TextField
             required
@@ -56,13 +102,18 @@ export default function SignUp() {
             label="Password"
             type="password"
             variant="outlined"
+            value={password}
+            onChange={handlePassword}
           />
+
           <TextField
             id="outlined-select-occupation"
             select
             label="Select Occupation"
             helperText="Please select your occupation"
             variant="outlined"
+            value={occupation}
+            onChange={handleOccupation}
           >
             {occupations.map((option) => (
               <MenuItem key={option.value} value={option.value}>
@@ -70,7 +121,7 @@ export default function SignUp() {
               </MenuItem>
             ))}
           </TextField>
-          <Button variant="contained" color="primary">
+          <Button variant="contained" color="primary" onClick={signUpUser}>
             Submit
           </Button>
         </Box>
