@@ -26,20 +26,14 @@ def method_name():
 @app.route('/signup', methods=['POST'])
 def signup():
     data = request.get_json()
-    username = data.get('username')
+    email = data.get('username')
     password = data.get('password')
-    name = data.get('name')
-    user_id = data.get('user_id')
-    entry_time = datetime.now().isoformat()
+    # entry_time = datetime.now().isoformat()
     try:
         users.put_item(
             Item={
-                'user_id': user_id,
-                "entry_time":entry_time,
-                'username': username,
+                'user_id': email,
                 'password': password,
-                'name':name,
-                
             },
             ConditionExpression="attribute_not_exists(user_id)"
         )
@@ -58,6 +52,7 @@ def signup():
 
     
 #post request to sign in a user
+
 #middleware?
 
 #get request to get a user's confidence metrics
