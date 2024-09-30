@@ -6,6 +6,7 @@ import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 import Button from "@mui/material/Button";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 export default function SignUp() {
@@ -27,6 +28,7 @@ export default function SignUp() {
       label: "Industry Professional",
     },
   ];
+  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -34,19 +36,15 @@ export default function SignUp() {
 
   const handleName = (event) => {
     setName(event.target.value);
-    console.log(name);
   };
   const handleEmail = (event) => {
     setEmail(event.target.value);
-    console.log(email);
   };
   const handleOccupation = (event) => {
     setOccupation(event.target.value);
-    console.log(occupation);
   };
   const handlePassword = (event) => {
     setPassword(event.target.value);
-    console.log(password);
   };
 
   const signUpUser = async (event) => {
@@ -59,6 +57,9 @@ export default function SignUp() {
         occupation: occupation,
       });
       console.log(response.data);
+      if (response.status == 200) {
+        navigate("/");
+      }
     } catch (error) {
       console.error(error);
     }
