@@ -40,15 +40,21 @@ def signup():
                 'password': password,
                 'name':name,
                 
-            }
+            },
+            ConditionExpression="attribute_not_exists(user_id)"
         )
         return jsonify({
             'message':"User was created successfully"
-        })
+        }) , 200
     except Exception as e:
-        return jsonify({
-            "error":str(e) 
-        }) , 500
+        if e.response['Error']['Code'] == 'ConditionalCheckFailedException':
+            return jsonify({
+                "error" : "User already exists."
+            })
+        else:
+            return jsonify({
+                "error":str(e) 
+            }) , 500
 
     
 #post request to sign in a user
