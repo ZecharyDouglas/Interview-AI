@@ -2,7 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
-import SignUp from "./SignUp.js";
+import SignIn from "./SignIn.tsx";
+import SignUp from "./SignUp.tsx";
 import { createTheme } from "@mui/material/styles";
 import RouteError from "./RouteError.tsx";
 import { AppProvider } from "@toolpad/core/AppProvider";
@@ -140,7 +141,7 @@ const router = createBrowserRouter([
     errorElement: <RouteError />,
   },
   {
-    path: "/signup",
+    path: "/signin",
     element: (
       <AppProvider
         branding={{
@@ -150,9 +151,14 @@ const router = createBrowserRouter([
         theme={theme}
         navigation={navArr}
       >
-        <SignUp />
+        <SignIn />
       </AppProvider>
     ),
+    errorElement: <RouteError />,
+  },
+  {
+    path: "/signup",
+    element: <SignUp />,
     errorElement: <RouteError />,
   },
 ]);
