@@ -56,6 +56,29 @@ def signup():
 
     
 #post request to sign in a user
+@app.route('/signin', methods=['GET'])
+def signIn():
+    data = request.get_json()
+    email = data.get('email')
+    password = data.get('password')
+    try:
+        response = users.query(KeyConditionExpression=Key('user_id').eq('email'))
+        items = response['Items']
+        if (items.length()==0):
+            return jsonify({
+                "error":"User data could not be found , please make an account"
+            })
+        else:
+            ##create a session for the user and give them a cookie?
+            return jsonify({
+                "error":"User data could not be found , please make an account"
+            })
+
+            
+    except Exception as e:
+        return jsonify({
+            "error": str(e)
+        })
 
 #middleware?
 
