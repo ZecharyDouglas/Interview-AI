@@ -29,19 +29,19 @@ export default function SignIn() {
   const signInUser = async (provider, formData) => {
     if (provider.id == "credentials") {
       try {
-        const response = await axios.post(
-          "http://127.0.0.1:5000/signin",
-          formData
-        );
-        console.log(response.data);
-        console.log(response.status);
-        if (response.status == 200) {
-          setTimeout(() => {
-            navigate("/");
-          }, 3000);
-        }
+        const response = await axios
+          .post("http://127.0.0.1:5000/signin", formData)
+          .then((response) => {
+            console.log(response.data);
+            console.log(response.status);
+            if (response.status == 200) {
+              setTimeout(() => {
+                navigate("/");
+              }, 3000);
+            }
+          });
       } catch (error) {
-        console.log("Sign In failed /n", error);
+        console.log(error.response.data);
       }
     }
     //else to be handled later

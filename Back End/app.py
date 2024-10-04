@@ -1,18 +1,36 @@
-from flask import Flask , jsonify , request
+from flask import Flask , jsonify , request ,  redirect, url_for, render_template, session , make_response
 import boto3
 import botocore
+from boto3.dynamodb.conditions import Key, Attr
 from botocore.exceptions import ClientError
 from flask_cors import CORS
 from datetime import datetime
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+import secrets
 
 #creates the app and then enables the CORS for all domains
 app = Flask(__name__)
+app.secret_key = secrets.token_hex(16)
 CORS(app)
 
 #getting the dynamodb service resource
 session = boto3.Session(profile_name='default')
 dynamodb = session.resource('dynamodb', region_name='us-east-1')
 users = dynamodb.Table('Users')
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+#user class is used to create a user whose ID is necessary for maintaining session data
+class User(UserMixin):
+    def __init__(self, user_id):
+        self.id = user_id
+
+#loader function that loads a user , but not from dynmamo , simply from the server
+@login_manager.user_loader
+def load_user(user_id):
+    return User(user_id)
+    
 
 #test for listening
 @app.route('/' , methods=['GET'])
@@ -56,35 +74,35 @@ def signup():
 
     
 #post request to sign in a user
-@app.route('/signin', methods=['GET'])
+@app.post('/signin')
 def signIn():
-    data = request.get_json()
-    email = data.get('email')
-    password = data.get('password')
+    
+    email = request.form['email']
+    password = request.form['password']
     try:
-        response = users.query(KeyConditionExpression=Key('user_id').eq('email'))
+        response = users.query(KeyConditionExpression=Key('user_id').eq(email), FilterExpression=Attr('password').eq(password)
+        )
         items = response['Items']
-        if (items.length()==0):
-            return jsonify({
-                "error":"User data could not be found , please make an account"
-            })
+        if (len(items)>0):
+            user = User(email)
+            login_user(user)
+            return make_response(jsonify({
+                "message":"User successfully found, session created!"
+            }), 200)
         else:
-            ##create a session for the user and give them a cookie?
-            return jsonify({
-                "error":"User data could not be found , please make an account"
-            })
+            return make_response(jsonify({
+                "error":"Credentials could not be validated , please try again"
+            }), 450) 
 
             
     except Exception as e:
-        return jsonify({
+        return make_response(jsonify({
             "error": str(e)
-        })
+        } , 500) , 500) 
 
-#middleware?
+#middlware?
 
 #get request to get a user's confidence metrics
-#get request to see if a user is signed in 
-#get request to plot user progress in charts
 
 #post request to call model processing and return results to the database
 
