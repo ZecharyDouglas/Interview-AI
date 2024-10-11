@@ -1,44 +1,133 @@
 import React, { useState } from "react";
 import { RadialBarChart, RadialBar, Legend, Tooltip } from "recharts";
 import { Grid, Item } from "@mui/material"; // Make sure 'Item' is imported correctly or styled accordingly
+import CardContent from "@mui/material/CardContent";
+import Card from "@mui/material/Card";
+import CardActions from "@mui/material/CardActions";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
 
 export default function Insights() {
   const [confidenceValues, setConfidenceValues] = useState([
-    4, 4, 5, 8, 8, 4, 4, 5, 8, 8,
+    {
+      topic: "Arrays and Strings",
+      confidence: 4,
+    },
+    {
+      topic: "Hashing",
+      confidence: 4,
+    },
+    {
+      topic: "Linked Lists",
+      confidence: 4,
+    },
+    {
+      topic: "Stacks and Queues",
+      confidence: 4,
+    },
+    {
+      topic: "Trees and Graphs",
+      confidence: 4,
+    },
+    {
+      topic: "Heaps",
+      confidence: 4,
+    },
+    {
+      topic: "Gready Algorithms",
+      confidence: 4,
+    },
+    {
+      topic: "Binary Search",
+      confidence: 4,
+    },
+    {
+      topic: "Backtracking",
+      confidence: 4,
+    },
+    {
+      topic: "Dynamic Programming",
+      confidence: 4,
+    },
   ]);
 
-  let fill = [];
   return (
-    <div>
-      <h1>Insights</h1>
-      <Grid
-        container
-        spacing={{ xs: 2, md: 3 }}
-        columns={{ xs: 4, sm: 8, md: 12 }}
-      >
-        {confidenceValues.map((value, index) => (
-          <Grid item xs={1} sm={1} md={3} key={index}>
-            <RadialBarChart
-              width={150}
-              height={150}
-              innerRadius="60%"
-              outerRadius="100%"
-              data={[{ value, name: `Value ${index}` }]}
-              startAngle={180}
-              endAngle={0}
-            >
-              <RadialBar
-                minAngle={15}
-                label={{ fill: "#111", position: "insideStart" }}
-                background
-                clockWise={true}
-                dataKey="value"
-              />
-              <Tooltip />
-            </RadialBarChart>
+    <div className="flex flex-col items-center ml-10 mr-10">
+      <div className=" flex-col align-top mt-0">
+        <div className=" mt-0 mb-20">
+          <h1 className=" text-6xl">Insights Dashboard</h1>
+        </div>
+        <div className=" flex flex-col">
+          <Grid
+            container
+            spacing={{ xs: 2, md: 3 }}
+            columns={{ xs: 4, sm: 8, md: 10 }}
+          >
+            {confidenceValues.map((value, index) => (
+              <Grid item xs={1} sm={1} md={2} key={index}>
+                <CardContent className=" bg-customlighterblue shadow-md">
+                  <Typography
+                    gutterBottom
+                    sx={{
+                      color: "text.secondary",
+                      fontSize: 14,
+                    }}
+                  >
+                    {value.topic}
+                  </Typography>
+                  <Typography variant="h5" component="div"></Typography>
+                  <Typography sx={{ color: "text.secondary", mb: 1.5 }}>
+                    adjective
+                  </Typography>
+                  <Typography className=" bg-white">
+                    <RadialBarChart
+                      width={100}
+                      height={100}
+                      innerRadius="60%"
+                      outerRadius="100%"
+                      data={[{ value: value.confidence, name: value.topic }]}
+                      startAngle={180}
+                      endAngle={0}
+                      className=" ml-20"
+                    >
+                      <RadialBar
+                        minAngle={15}
+                        label={{ fill: "#CCF", position: "insideCenter" }}
+                        background
+                        clockWise={true}
+                        dataKey="value"
+                      />
+                      <Tooltip />
+                    </RadialBarChart>
+                  </Typography>
+                  <CardActions>
+                    <Button size="small">Learn More</Button>
+                  </CardActions>
+                </CardContent>
+
+                {/* <RadialBarChart
+                  width={150}
+                  height={150}
+                  innerRadius="60%"
+                  outerRadius="100%"
+                  data={[{ value, name: `Value ${index}` }]}
+                  startAngle={180}
+                  endAngle={0}
+                >
+                  <RadialBar
+                    minAngle={15}
+                    label={{ fill: "#111", position: "insideStart" }}
+                    background
+                    clockWise={true}
+                    dataKey="value"
+                  />
+                  <Tooltip />
+                </RadialBarChart> */}
+              </Grid>
+            ))}
           </Grid>
-        ))}
-      </Grid>
+        </div>
+      </div>
     </div>
   );
 }
