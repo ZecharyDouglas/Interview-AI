@@ -140,6 +140,37 @@ def getConfidence():
             }) , 500
 
 
+@app.post('/postconfidence')
+def postconfidence():
+    data = request.get_json()
+    confidence_value = data.get('confidence_value')
+    interview_topic = data.get('interview_topic')
+    interview_transcript = data.get('interview_transcript')
+    interview_feedback = data.get('interview_feedback')
+    user_id = 'darrenjames@gmail.com' ## still need to figure out getting current user email
+    entry_time = datetime.now().isoformat()
+    itemId = str(uuid.uuid4())  # Generate a unique UUID for the item_id
+    try:
+        users.put_item(
+            Item={
+                'user_id': user_id,#making sure we only work with lowercase version of text
+                'item_id': itemId,
+                'confidence_value': confidence_value,
+                'interview_topic': interview_topic,
+                'interview_transcript': interview_transcript,
+                'interview_feedback': interview_feedback,
+                'entry_time': entry_time,
+            },
+            
+        )
+        return jsonify({
+            'message':"Interview data was successfully uploaded"
+        }) , 200
+    except Exception as e:
+        return jsonify({
+                "error":str(e) 
+            }) , 500
+
 #post request to call model processing and return results to the database
 
 if __name__ == '__main__':
