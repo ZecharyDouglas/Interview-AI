@@ -52,10 +52,10 @@ export default function Insights() {
   ]);
 
   return (
-    <div className="flex flex-col items-center ml-10 mr-10">
+    <div className="flex flex-col items-center ml-10 mr-10 mt-10">
       <div className=" flex-col align-top mt-0">
-        <div className=" mt-0 mb-20">
-          <h1 className=" text-6xl">Insights Dashboard</h1>
+        <div className=" mb-10">
+          <h1 className=" text-3xl">Insights Dashboard</h1>
         </div>
         <div className=" flex flex-col">
           <Grid
@@ -126,6 +126,20 @@ export default function Insights() {
               </Grid>
             ))}
           </Grid>
+        </div>
+        <div className=" mt-10">
+          <h1 className=" text-2xl">Top 5 Tips</h1>
+          <ul>
+            {[...Array(5)].map((_, index) => (
+              <li className="mt-5">
+                {" "}
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Libero
+                alias vero qui. Facere sint, veniam eius recusandae,
+                consequuntur sed dolore, asperiores illum dolorem a iusto
+                blanditiis. Id eos animi amet?
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </div>
