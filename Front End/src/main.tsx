@@ -144,8 +144,8 @@ const router = createBrowserRouter([
     path: "/signin",
     element: (
       <AppProvider
-        session={session}
-        authentication={authentication}
+        // session={session}
+        // authentication={authentication}
         branding={{
           logo: <img src={Owl} width={50} height={50} />,
           title: "Interviewer AI",
