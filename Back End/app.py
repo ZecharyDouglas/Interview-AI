@@ -1,27 +1,36 @@
-from flask import Flask , jsonify , request ,  redirect, url_for, render_template, session , make_response
+from flask import Flask , jsonify , request ,  redirect, url_for, render_template , make_response , session
 import boto3
 import uuid
 import botocore
+from cachelib.file import FileSystemCache
+from flask_session import Session
 from boto3.dynamodb.conditions import Key, Attr
 from botocore.exceptions import ClientError
-from flask_cors import CORS
+from flask_cors import CORS , cross_origin
 from datetime import datetime
-from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 import secrets
 from Blueprints.TextAnalysis.transcript import transcript_bp
 from Blueprints.TextAnalysis.speech import speech_bp
+import os
+
 
 #creates the app and then enables the CORS for all domains
 app = Flask(__name__)
 #CORS(app, supports_credentials=True, resources={r"/*": {"origins": "http://localhost:5173"}}, allow_headers=["Content-Type", "Authorization"])
-CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}}, supports_credentials=True)
+app.config['SESSION_TYPE'] = 'cachelib'  # or other storage types
+app.config['SESSION_CACHELIB'] = FileSystemCache(threshold=500, cache_dir="sessions")
+app.config['SESSION_SERIALIZATION_FORMAT'] = 'json'
+app.config['SESSION_COOKIE_DOMAIN'] = 'localhost'
+app.config['SESSION_COOKIE_SAMESITE']="None"
+app.config['SESSION_COOKIE_SECURE']=False
+CORS(app, supports_credentials=True, resources={r"/*": {"origins": "http://localhost:5173"}})
 
-app.config['SESSION_TYPE'] = 'filesystem'  # or other storage types
-app.config.update(
-    SESSION_COOKIE_SAMESITE="None",  # Use "Lax" if you're testing within the same site
-    SESSION_COOKIE_SECURE=False      # Use True only if using HTTPS
-)
+# Ensure the sessions directory exists
+if not os.path.exists("sessions"):
+    os.makedirs("sessions")
 
+Session(app)
+    
 app.secret_key = secrets.token_hex(16)
 
 #Loads in the routes in the blueprint
@@ -30,37 +39,9 @@ app.register_blueprint(transcript_bp, url_prefix = "/transcript")
 app.register_blueprint(speech_bp, url_prefix = "/speech")
 
 #getting the dynamodb service resource
-session = boto3.Session(profile_name='default')
-dynamodb = session.resource('dynamodb', region_name='us-east-1')
+aws_session = boto3.Session(profile_name='default')
+dynamodb = aws_session.resource('dynamodb', region_name='us-east-1')
 users = dynamodb.Table('Users')
-
-login_manager = LoginManager()
-login_manager.init_app(app)
-
-
-#user class is used to create a user whose ID is necessary for maintaining session data
-class User(UserMixin):
-    def __init__(self, user_id):
-        self.id = user_id
-    def __repr__(self):
-        return f'User({self.id})'
-
-#loader function that loads a user , but not from dynmamo , simply from the server
-@login_manager.user_loader
-def load_user(user_id):
-    return User(user_id)
-
-@app.route('/test_current_user')
-@login_required
-def test_current_user():
-    return jsonify({
-        "authenticated": current_user.is_authenticated,
-        "anon": current_user.is_anonymous,
-        "user_id": current_user.get_id(),
-    
-    })
-
-    
 
 #test for listening
 @app.route('/' , methods=['GET'])
@@ -108,8 +89,8 @@ def signup():
     
 #post request to sign in a user
 @app.post('/signin')
+@cross_origin(origins=["http://localhost:5173"] , supports_credentials=True)
 def signIn():
-    
     email = request.form['email']
     password = request.form['password']
     # data = request.get_json()
@@ -121,19 +102,11 @@ def signIn():
         items = response['Items']
         print(items)
         if (len(items)>0):
-            user = User(email.lower())
-            ##print(user)
-            login_user(user)
-            ##current user methods and properties
-            print(f"The current user is {current_user.id}")
-            print(f"Is authenticated {current_user.is_authenticated}")
-            print(f"Is active {current_user.is_active}")
-            print(f"Is anonymous {current_user.is_anonymous}")
-            print(f"Get I {current_user.get_id()}")
+            session['user_id'] = email.lower()
+            print(session)
             
             return make_response(jsonify({
-                "message":f"User successfully found, session created! The current user is {current_user.id}",
-                
+                "message":f"User successfully found, session created! The current user is {session.get('user_id')}",
             }), 200)
         else:
             return make_response(jsonify({
@@ -143,7 +116,7 @@ def signIn():
             
     except Exception as e:
         return make_response(jsonify({
-            "error": str(e)
+            "error": f"{str(e)}"
         }) , 500)  
 
 #middleware?
@@ -151,37 +124,43 @@ def signIn():
 #get request to get a user's confidence metrics
 @app.get('/getconfidenceall')
 def getConfidence():
-    email =  current_user.get_id()
-    print(f"The current user is {email}")
-    print(email)
-    try:
-        
-        response = users.scan(
-            FilterExpression = Attr('user_id').eq(email) & Attr('confidence_value').exists()
-        )
-        items = response['Items']
-         # Iterate over each item and convert any sets to lists
-        for item in items:
-            for key, value in item.items():
-                if isinstance(value, set):  # Check if the value is a set
-                    item[key] = list(value)  # Convert it to a list
+    print("Request Cookie:",request.cookies)
+    email =  session.get('user_id')
+    if not email :
+        return make_response(jsonify({
+            "message":"User fetch failed."
+        }), 300)
+    else:
+        print(f"The current user is {email}")
+        print(email)
+        try:
+            
+            response = users.scan(
+                FilterExpression = Attr('user_id').eq(email) & Attr('confidence_value').exists()
+            )
+            items = response['Items']
+            print(items)
+            # Iterate over each item and convert any sets to lists
+            for item in items:
+                for key, value in item.items():
+                    if isinstance(value, set):  # Check if the value is a set
+                        item[key] = list(value)  # Convert it to a list
 
-        return jsonify(items)
-    except Exception as e:
-            return jsonify({
-                "error":str(e) 
-            }) , 500
+            return jsonify(items)
+        except Exception as e:
+                return jsonify({
+                    "error":str(e) 
+                }) , 500
 
 
 @app.post('/postconfidence')
-@login_required
 def postconfidence():
     data = request.get_json()
     confidence_value = data.get('confidence_value')
     interview_topic = data.get('interview_topic')
     interview_transcript = data.get('interview_transcript')
     interview_feedback = data.get('interview_feedback')
-    user_id = current_user.id ## still need to figure out getting current user email
+    # user_id = session.get.id ## still need to figure out getting current user email
     entry_time = datetime.now().isoformat()
     itemId = str(uuid.uuid4())  # Generate a unique UUID for the item_id
     try:
@@ -204,6 +183,7 @@ def postconfidence():
         return jsonify({
                 "error":str(e) 
             }) , 500
+
 
 #post request to call model processing and return results to the database
 

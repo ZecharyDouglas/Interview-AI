@@ -30,10 +30,11 @@ export default function SignIn() {
     if (provider.id == "credentials") {
       try {
         const response = await axios
-          .post("http://127.0.0.1:5000/signin", formData)
+          .post("http://127.0.0.1:5000/signin", formData, {
+            withCredentials: true,
+          })
           .then((response) => {
             console.log(response.data);
-            console.log(response.status);
             if (response.status == 200) {
               setTimeout(() => {
                 navigate("/insights");
