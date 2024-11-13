@@ -5,6 +5,8 @@ import clsx from "clsx";
 import { SignInPage } from "@toolpad/core/SignInPage";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import SigninModal from "./helper components/SIgninModal";
 
 const providers = [
   {
@@ -24,8 +26,11 @@ const providers = [
     name: "Email and Password",
   },
 ];
+
 export default function SignIn() {
+  const [signedIn, setSignedIn] = useState(false);
   const navigate = useNavigate();
+
   const signInUser = async (provider, formData) => {
     if (provider.id == "credentials") {
       try {
@@ -36,12 +41,14 @@ export default function SignIn() {
           .then((response) => {
             console.log(response.data);
             if (response.status == 200) {
+              setSignedIn(true);
               setTimeout(() => {
                 navigate("/insights");
               }, 3000);
             }
           });
       } catch (error) {
+        alert("Sign In Failed!");
         console.log(error.response.data);
       }
     }
@@ -50,5 +57,13 @@ export default function SignIn() {
 
     // }
   };
-  return <SignInPage signIn={signInUser} providers={providers} />;
+  return (
+    <>
+      {signedIn ? (
+        <SigninModal />
+      ) : (
+        <SignInPage signIn={signInUser} providers={providers} />
+      )}
+    </>
+  );
 }

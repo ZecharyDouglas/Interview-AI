@@ -119,25 +119,6 @@ export default function Insights() {
                     <Button size="small">Learn More</Button>
                   </CardActions>
                 </CardContent>
-
-                {/* <RadialBarChart
-                  width={150}
-                  height={150}
-                  innerRadius="60%"
-                  outerRadius="100%"
-                  data={[{ value, name: `Value ${index}` }]}
-                  startAngle={180}
-                  endAngle={0}
-                >
-                  <RadialBar
-                    minAngle={15}
-                    label={{ fill: "#111", position: "insideStart" }}
-                    background
-                    clockWise={true}
-                    dataKey="value"
-                  />
-                  <Tooltip />
-                </RadialBarChart> */}
               </Grid>
             ))}
           </Grid>
