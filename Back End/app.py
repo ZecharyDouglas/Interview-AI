@@ -1,4 +1,5 @@
-from flask import Flask , jsonify , request ,  redirect, url_for, render_template , make_response , session
+from flask import Flask , jsonify , request ,  redirect, url_for, render_template , make_response , session 
+import logging
 import boto3
 import uuid
 import botocore
@@ -6,7 +7,7 @@ from cachelib.file import FileSystemCache
 from flask_session import Session
 from boto3.dynamodb.conditions import Key, Attr
 from botocore.exceptions import ClientError
-from flask_cors import CORS , cross_origin
+from flask_cors import CORS , cross_origin 
 from datetime import datetime
 import secrets
 from Blueprints.TextAnalysis.transcript import transcript_bp
@@ -21,9 +22,10 @@ app.config['SESSION_TYPE'] = 'cachelib'  # or other storage types
 app.config['SESSION_CACHELIB'] = FileSystemCache(threshold=500, cache_dir="sessions")
 app.config['SESSION_SERIALIZATION_FORMAT'] = 'json'
 app.config['SESSION_COOKIE_DOMAIN'] = 'localhost'
-app.config['SESSION_COOKIE_SAMESITE']="None"
+app.config['SESSION_COOKIE_SAMESITE']="Lax"
 app.config['SESSION_COOKIE_SECURE']=False
-CORS(app, supports_credentials=True, resources={r"/*": {"origins": "http://localhost:5173"}})
+CORS(app, supports_credentials=True , resources={r"/*": {"origins": "http://localhost:5173"}})
+logging.getLogger('flask_cors').level = logging.DEBUG
 
 # Ensure the sessions directory exists
 if not os.path.exists("sessions"):
@@ -89,13 +91,10 @@ def signup():
     
 #post request to sign in a user
 @app.post('/signin')
-@cross_origin(origins=["http://localhost:5173"] , supports_credentials=True)
 def signIn():
     email = request.form['email']
     password = request.form['password']
-    # data = request.get_json()
-    # email = data.get('email')
-    # password = data.get('password')
+    
     try:
         response = users.query(KeyConditionExpression=Key('user_id').eq(email.lower()), FilterExpression=Attr('password').eq(password)
         )
@@ -105,9 +104,11 @@ def signIn():
             session['user_id'] = email.lower()
             print(session)
             
-            return make_response(jsonify({
+            response = make_response(jsonify({
                 "message":f"User successfully found, session created! The current user is {session.get('user_id')}",
             }), 200)
+            
+            return response
         else:
             return make_response(jsonify({
                 "error":"Credentials could not be validated , please try again"
@@ -146,7 +147,8 @@ def getConfidence():
                     if isinstance(value, set):  # Check if the value is a set
                         item[key] = list(value)  # Convert it to a list
 
-            return jsonify(items)
+            response =  jsonify(items)
+            return response
         except Exception as e:
                 return jsonify({
                     "error":str(e) 
@@ -183,6 +185,15 @@ def postconfidence():
         return jsonify({
                 "error":str(e) 
             }) , 500
+
+# @app.after_request
+# def add_cors_headers(response):
+#     response.headers["Access-Control-Allow-Origin"] = "http://localhost:5173"
+#     response.headers["Access-Control-Allow-Credentials"] = "true"
+#     response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+#     response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+#     return response
+
 
 
 #post request to call model processing and return results to the database
