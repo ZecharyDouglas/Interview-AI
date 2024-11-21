@@ -74,9 +74,11 @@ export default function Insights() {
             Insights Dashboard
           </h1>
         </div>
-        <div className="grid grid-cols-5 grid-rows-2 ">
+        <div className="grid grid-cols-5 grid-rows-2 text-center ">
           {confidenceValues.map((value, index) => (
-            <div className=" bg-slate-50 shadow-md rounded-md m-4 p-10 border-2 border-black flex items-center justify-center">
+            <div className=" bg-slate-50 shadow-md rounded-md m-4 p-10 border-2 border-black flex flex-col items-center justify-center  whitespace-nowrap">
+              <h5 className="mb-5">{value.topic}</h5>
+
               <RadialBarChart
                 width={100}
                 height={100}
