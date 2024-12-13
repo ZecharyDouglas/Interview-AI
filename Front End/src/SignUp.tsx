@@ -50,7 +50,7 @@ export default function SignUp() {
   const signUpUser = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.post("http://127.0.0.1:5000/signup", {
+      const response = await axios.post("/api/signup", {
         name: name,
         email: email,
         password: password,
@@ -58,7 +58,7 @@ export default function SignUp() {
       });
       console.log(response.data);
       if (response.status == 200) {
-        navigate("/");
+        navigate("/signin");
       }
     } catch (error) {
       console.error(error);

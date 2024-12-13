@@ -7,8 +7,10 @@ import CardActions from "@mui/material/CardActions";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function Insights() {
+  const navigate = useNavigate();
   const [confidenceValues, setConfidenceValues] = useState([
     {
       topic: "Arrays and Strings",
@@ -54,13 +56,12 @@ export default function Insights() {
 
   (async () => {
     try {
-      const response = await axios.get(
-        "http://127.0.0.1:5000/getconfidenceall",
-        {
-          withCredentials: true,
-        }
-      );
-      console.log(response.data);
+      const response = await axios.get("/api/getconfidenceall", {
+        withCredentials: true,
+      });
+      if (response.data) {
+        console.log(response.data);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -76,7 +77,10 @@ export default function Insights() {
         </div>
         <div className="grid grid-cols-5 grid-rows-2 text-center ">
           {confidenceValues.map((value, index) => (
-            <div className=" bg-slate-50 shadow-md rounded-md m-4 p-10 border-2 border-black flex flex-col items-center justify-center  whitespace-nowrap">
+            <div
+              key={index}
+              className=" bg-slate-100 shadow-md rounded-md m-4 p-10  flex flex-col items-center justify-center  whitespace-nowrap"
+            >
               <h5 className="mb-5">{value.topic}</h5>
 
               <RadialBarChart
@@ -102,7 +106,7 @@ export default function Insights() {
             </div>
           ))}
         </div>
-        <div className=" mt-10">
+        <div className=" mt-10 bg-slate-100 rounded-md shadow-md p-5 mb-10">
           <h1 className=" text-2xl font-thin">Top 5 Tips</h1>
           <ul>
             {[...Array(5)].map((_, index) => (

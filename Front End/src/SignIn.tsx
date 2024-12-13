@@ -6,7 +6,7 @@ import { SignInPage } from "@toolpad/core/SignInPage";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import SigninModal from "./helper components/SIgninModal";
+import SigninModal from "./helper components/SigninModal";
 
 const providers = [
   {
@@ -35,7 +35,7 @@ export default function SignIn() {
     if (provider.id == "credentials") {
       try {
         const response = await axios
-          .post("http://127.0.0.1:5000/signin", formData, {
+          .post("/api/signin", formData, {
             withCredentials: true,
           })
           .then((response) => {
@@ -57,6 +57,7 @@ export default function SignIn() {
 
     // }
   };
+
   return (
     <>
       {signedIn ? (

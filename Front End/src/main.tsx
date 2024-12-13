@@ -6,6 +6,7 @@ import SignIn from "./SignIn.tsx";
 import SignUp from "./SignUp.tsx";
 import { createTheme } from "@mui/material/styles";
 import RouteError from "./RouteError.tsx";
+import RouteErrorSignIn from "./RouteErrorSignIn.tsx";
 import { AppProvider } from "@toolpad/core/AppProvider";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
 import Owl from "./assets/Owl.png";
@@ -39,6 +40,10 @@ const router = createBrowserRouter([
     path: "/signup",
     element: <SignUp />,
     errorElement: <RouteError />,
+  },
+  {
+    path: "/error-401",
+    element: <RouteErrorSignIn />,
   },
 ]);
 

@@ -17,6 +17,7 @@
     "@heroicons/react": "^2.1.5",
     "@mui/icons-material": "^6.1.0",
     "@mui/material": "^6.1.0",
+    "@reduxjs/toolkit": "^2.5.0",
     "@toolpad/core": "^0.6.0",
     "@types/react-router-dom": "^5.3.3",
     "aws-amplify": "^6.5.2",

@@ -1,6 +1,8 @@
 from flask import Flask , jsonify , request ,  redirect, url_for, render_template , make_response , session 
+from flask_login import LoginManager , UserMixin , login_required , login_user ,logout_user , current_user
 import logging
 import boto3
+from functools import wraps
 import uuid
 import botocore
 from cachelib.file import FileSystemCache
@@ -17,6 +19,7 @@ import os
 
 #creates the app and then enables the CORS for all domains
 app = Flask(__name__)
+app.secret_key = secrets.token_hex(16)
 #CORS(app, supports_credentials=True, resources={r"/*": {"origins": "http://localhost:5173"}}, allow_headers=["Content-Type", "Authorization"])
 app.config['SESSION_TYPE'] = 'cachelib'  # or other storage types
 app.config['SESSION_CACHELIB'] = FileSystemCache(threshold=500, cache_dir="sessions")
@@ -31,9 +34,20 @@ logging.getLogger('flask_cors').level = logging.DEBUG
 if not os.path.exists("sessions"):
     os.makedirs("sessions")
 
-Session(app)
+server_session = Session(app)
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = "/signin"
+
+
+class User(UserMixin):
+    def __init__(self, email):
+        self.id = email
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User(email=user_id)
     
-app.secret_key = secrets.token_hex(16)
 
 #Loads in the routes in the blueprint
 app.register_blueprint(transcript_bp, url_prefix = "/transcript")
@@ -46,15 +60,23 @@ dynamodb = aws_session.resource('dynamodb', region_name='us-east-1')
 users = dynamodb.Table('Users')
 
 #test for listening
-@app.route('/' , methods=['GET'])
+@app.route('/api/' , methods=['GET'])
 def method_name():
     return jsonify({
         'message':'The API works!'
     })
+
+@login_manager.unauthorized_handler
+def unauthorized():
+    if request.is_json:  # Check if the request is an API call
+        return jsonify({"error": "Unauthorized access. Please log in."}), 401
+    else:
+        # Redirect for regular web requests
+        return redirect('/error-401')
     
 
 #post request to sign up user
-@app.route('/signup', methods=['POST'])
+@app.route('/api/signup', methods=['POST'])
 def signup():
     data = request.get_json()
     email = data.get('email')
@@ -90,7 +112,7 @@ def signup():
 
     
 #post request to sign in a user
-@app.post('/signin')
+@app.post('/api/signin')
 def signIn():
     email = request.form['email']
     password = request.form['password']
@@ -101,18 +123,20 @@ def signIn():
         items = response['Items']
         print(items)
         if (len(items)>0):
-            session['user_id'] = email.lower()
-            print(session)
+            user= User(email=email.lower())
+            login_user(user)
+            #session['user_id'] = email.lower()
+            #print(session)
             
             response = make_response(jsonify({
-                "message":f"User successfully found, session created! The current user is {session.get('user_id')}",
+                "message":f"User successfully found, session created! The current user is {current_user.id}",
             }), 200)
             
             return response
         else:
             return make_response(jsonify({
                 "error":"Credentials could not be validated , please try again"
-            }), 450) 
+            }), 401) 
 
             
     except Exception as e:
@@ -123,10 +147,11 @@ def signIn():
 #middleware?
 
 #get request to get a user's confidence metrics
-@app.get('/getconfidenceall')
+@app.get('/api/getconfidenceall')
+@login_required
 def getConfidence():
-    print("Request Cookie:",request.cookies)
-    email =  session.get('user_id')
+    email =  current_user.id
+    print(f"This is the current user{email}")
     if not email :
         return make_response(jsonify({
             "message":"User fetch failed."
@@ -155,7 +180,8 @@ def getConfidence():
                 }) , 500
 
 
-@app.post('/postconfidence')
+@app.post('/api/postconfidence')
+@login_required
 def postconfidence():
     data = request.get_json()
     confidence_value = data.get('confidence_value')
@@ -168,7 +194,7 @@ def postconfidence():
     try:
         users.put_item(
             Item={
-                'user_id': user_id,#making sure we only work with lowercase version of text
+                'user_id': current_user.id,#making sure we only work with lowercase version of text
                 'item_id': itemId,
                 'confidence_value': confidence_value,
                 'interview_topic': interview_topic,
@@ -185,7 +211,14 @@ def postconfidence():
         return jsonify({
                 "error":str(e) 
             }) , 500
+    
 
+@app.post("/api/logout")
+@login_required
+def logoutUser():
+    logout_user()
+    return jsonify({"message":"User sucessfully logged out."} , 200)
+    
 # @app.after_request
 # def add_cors_headers(response):
 #     response.headers["Access-Control-Allow-Origin"] = "http://localhost:5173"
@@ -199,4 +232,4 @@ def postconfidence():
 #post request to call model processing and return results to the database
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='127.0.0.1', port=5000)

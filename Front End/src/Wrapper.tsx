@@ -1,8 +1,35 @@
 import React from "react";
 import Owl from "./assets/Owl.png";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function Wrapper() {
+  const navigate = useNavigate();
+
+  const logoutUser = async () => {
+    try {
+      const response = await axios
+        .post(
+          "/api/logout",
+          {},
+          {
+            withCredentials: true,
+          }
+        )
+        .then((response) => {
+          console.log(response.data);
+          if (response.status == 200) {
+            console.log("Logged Out Successfully.");
+            alert("You have been successfully logged out, redirecting....");
+            setTimeout(() => {
+              navigate("/signin");
+            }, 2000);
+          }
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (
     <>
       <div className="grid grid-cols-5 h-screen w-screen">
@@ -114,6 +141,12 @@ export default function Wrapper() {
               >
                 Profile
               </a>
+              <button
+                onClick={logoutUser}
+                className="text-xl font-inter font-thin m-5 bg-red-500 rounded-md p-2 hover:bg-red-300"
+              >
+                Log Out
+              </button>
             </div>
           </div>
           <Outlet />
