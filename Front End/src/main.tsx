@@ -12,12 +12,16 @@ import { DashboardLayout } from "@toolpad/core/DashboardLayout";
 import Owl from "./assets/Owl.png";
 import Wrapper from "./Wrapper.tsx";
 import Insights from "./Insights.tsx";
+import InterviewSkeleton from "./helper components/InterviewSkeleton.tsx";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Wrapper />,
-    children: [{ path: "/insights", element: <Insights /> }],
+    children: [
+      { path: "/insights", element: <Insights /> },
+      { path: "template", element: <InterviewSkeleton /> },
+    ],
     errorElement: <RouteError />,
   },
   {
