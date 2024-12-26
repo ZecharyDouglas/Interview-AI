@@ -164,22 +164,22 @@ def getConfidence():
             "message":"User fetch failed."
         }), 300)
     else:
-        print(f"The current user is {email}")
-        print(email)
+        # print(f"The current user is {email}")
+        # print(email)
         try:
             
             response = users.scan(
-                FilterExpression = Attr('user_id').eq(email) & Attr('confidence_value').exists()
+                FilterExpression = Attr('user_id').eq(email) & Attr('confidence_value').exists() & Attr('entry_time').exists()
             )
-            items = response['Items']
-            print(items)
+            items = response['Items']         
+            sorted_items = sorted(items, key=lambda x: x['entry_time'], reverse=True)[:5]       
             # Iterate over each item and convert any sets to lists
-            for item in items:
+            for item in sorted_items:
                 for key, value in item.items():
                     if isinstance(value, set):  # Check if the value is a set
                         item[key] = list(value)  # Convert it to a list
-
-            response =  jsonify(items)
+            
+            response =  jsonify(sorted_items)
             return response
         except Exception as e:
                 return jsonify({
