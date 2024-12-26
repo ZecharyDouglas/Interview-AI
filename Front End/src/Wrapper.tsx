@@ -2,6 +2,7 @@ import React from "react";
 import Owl from "./assets/Owl.png";
 import { Outlet, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
+import { NavLink } from "react-router-dom";
 
 export default function Wrapper() {
   const navigate = useNavigate();
@@ -38,84 +39,124 @@ export default function Wrapper() {
             <p className="font-thin font-inter text-xl ">Interview Topics</p>
           </div>
           <div className=" border-b-1 shadow-sm h-20 flex items-center justify-center">
-            <Link
+            <NavLink
               to={`interview/arrays-and-strings`}
-              className="font-thin font-inter text-lg "
+              className={({ isActive }) =>
+                `font-thin font-inter text-lg ${
+                  isActive ? "text-blue-500 font-bold" : "text-gray-700"
+                }`
+              }
             >
               Arrays and Strings
-            </Link>
+            </NavLink>
           </div>
           <div className=" border-b-1 shadow-sm h-20 flex items-center justify-center">
-            <Link
+            <NavLink
               to={`interview/hashing`}
-              className="font-thin font-inter text-lg "
+              className={({ isActive }) =>
+                `font-thin font-inter text-lg ${
+                  isActive ? "text-blue-500 font-bold" : "text-gray-700"
+                }`
+              }
             >
               Hashing
-            </Link>
+            </NavLink>
           </div>
           <div className=" border-b-1 shadow-sm h-20 flex items-center justify-center">
-            <Link
+            <NavLink
               to={`interview/linked-lists`}
-              className="font-thin font-inter text-lg "
+              className={({ isActive }) =>
+                `font-thin font-inter text-lg ${
+                  isActive ? "text-blue-500 font-bold" : "text-gray-700"
+                }`
+              }
             >
               Linked Lists
-            </Link>
+            </NavLink>
           </div>
           <div className=" border-b-1 shadow-sm h-20 flex items-center justify-center">
-            <Link
+            <NavLink
               to={`interview/stacks-and-queues`}
-              className="font-thin font-inter text-lg "
+              className={({ isActive }) =>
+                `font-thin font-inter text-lg ${
+                  isActive ? "text-blue-500 font-bold" : "text-gray-700"
+                }`
+              }
             >
               Stacks and Queues
-            </Link>
+            </NavLink>
           </div>
           <div className=" border-b-1 shadow-sm h-20 flex items-center justify-center">
-            <Link
+            <NavLink
               to={`interview/trees-and-graphs`}
-              className="font-thin font-inter text-lg "
+              className={({ isActive }) =>
+                `font-thin font-inter text-lg ${
+                  isActive ? "text-blue-500 font-bold" : "text-gray-700"
+                }`
+              }
             >
               Trees and Graphs
-            </Link>
+            </NavLink>
           </div>
           <div className=" border-b-1 shadow-sm h-20 flex items-center justify-center">
-            <Link
+            <NavLink
               to={`interview/heaps`}
-              className="font-thin font-inter text-lg "
+              className={({ isActive }) =>
+                `font-thin font-inter text-lg ${
+                  isActive ? "text-blue-500 font-bold" : "text-gray-700"
+                }`
+              }
             >
               Heaps
-            </Link>
+            </NavLink>
           </div>
           <div className=" border-b-1 shadow-sm h-20 flex items-center justify-center">
-            <Link
+            <NavLink
               to={`interview/greedy-algorithms`}
-              className="font-thin font-inter text-lg "
+              className={({ isActive }) =>
+                `font-thin font-inter text-lg ${
+                  isActive ? "text-blue-500 font-bold" : "text-gray-700"
+                }`
+              }
             >
               Greedy Algorithms
-            </Link>
+            </NavLink>
           </div>
           <div className=" border-b-1 shadow-sm h-20 flex items-center justify-center">
-            <Link
+            <NavLink
               to={`/interview/binary-search`}
-              className="font-thin font-inter text-lg "
+              className={({ isActive }) =>
+                `font-thin font-inter text-lg ${
+                  isActive ? "text-blue-500 font-bold" : "text-gray-700"
+                }`
+              }
             >
               Binary Search
-            </Link>
+            </NavLink>
           </div>
           <div className=" border-b-1 shadow-sm h-20 flex items-center justify-center">
-            <Link
+            <NavLink
               to={`interview/backtracking`}
-              className="font-thin font-inter text-lg "
+              className={({ isActive }) =>
+                `font-thin font-inter text-lg ${
+                  isActive ? "text-blue-500 font-bold" : "text-gray-700"
+                }`
+              }
             >
               Backtracking
-            </Link>
+            </NavLink>
           </div>
           <div className=" border-b-1 shadow-sm h-20 flex items-center justify-center">
-            <Link
+            <NavLink
               to={`interview/dynamic-programming`}
-              className="font-thin font-inter text-lg "
+              className={({ isActive }) =>
+                `font-thin font-inter text-lg ${
+                  isActive ? "text-blue-500 font-bold" : "text-gray-700"
+                }`
+              }
             >
               Dynamic Programming
-            </Link>
+            </NavLink>
           </div>
         </div>
         <nav className=" col-span-4">
