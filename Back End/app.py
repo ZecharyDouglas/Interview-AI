@@ -75,6 +75,13 @@ def unauthorized():
         return redirect('/error-401')
     
 
+@app.get("/api/checkauth")
+def middleware():
+    if current_user.is_authenticated:
+        return make_response(jsonify({"message":"Authenticated"}), 200)
+    else: 
+        return make_response(jsonify({"message":"Not authenticated"}) , 401)
+
 #post request to sign up user
 @app.route('/api/signup', methods=['POST'])
 def signup():

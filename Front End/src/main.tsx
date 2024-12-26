@@ -13,31 +13,25 @@ import Owl from "./assets/Owl.png";
 import Wrapper from "./Wrapper.tsx";
 import Insights from "./Insights.tsx";
 import InterviewSkeleton from "./helper components/InterviewSkeleton.tsx";
+import PrivateRoute from "./helper components/PrivateRoute.tsx";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Wrapper />,
+    element: (
+      <PrivateRoute>
+        <Wrapper />
+      </PrivateRoute>
+    ),
     children: [
       { path: "/insights", element: <Insights /> },
-      { path: "template", element: <InterviewSkeleton /> },
+      { path: "/template", element: <InterviewSkeleton /> },
     ],
     errorElement: <RouteError />,
   },
   {
     path: "/signin",
-    element: (
-      <AppProvider
-        // session={session}
-        // authentication={authentication}
-        branding={{
-          logo: <img src={Owl} width={50} height={50} />,
-          title: "Interviewer AI",
-        }}
-      >
-        <SignIn />
-      </AppProvider>
-    ),
+    element: <SignIn />,
     errorElement: <RouteError />,
   },
   {

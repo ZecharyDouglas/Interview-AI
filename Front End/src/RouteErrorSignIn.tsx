@@ -16,7 +16,7 @@ export default function RouteErrorSignIn() {
       </h2>
       <h2 className=" py-5 text-center">
         Go to the{" "}
-        <a href="/" className=" text-blue-600 hover:text-blue-500">
+        <a href="/signin" className=" text-blue-600 hover:text-blue-500">
           sign in page
         </a>
         .
