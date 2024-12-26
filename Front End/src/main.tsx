@@ -25,7 +25,7 @@ const router = createBrowserRouter([
     ),
     children: [
       { path: "/insights", element: <Insights /> },
-      { path: "/template", element: <InterviewSkeleton /> },
+      { path: "/interview/:id", element: <InterviewSkeleton /> },
     ],
     errorElement: <RouteError />,
   },

@@ -1,6 +1,6 @@
 import React from "react";
 import Owl from "./assets/Owl.png";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 
 export default function Wrapper() {
@@ -38,84 +38,84 @@ export default function Wrapper() {
             <p className="font-thin font-inter text-xl ">Interview Topics</p>
           </div>
           <div className=" border-b-1 shadow-sm h-20 flex items-center justify-center">
-            <a
-              href="http://something.com"
+            <Link
+              to={`interview/arrays-and-strings`}
               className="font-thin font-inter text-lg "
             >
               Arrays and Strings
-            </a>
+            </Link>
           </div>
           <div className=" border-b-1 shadow-sm h-20 flex items-center justify-center">
-            <a
-              href="http://something.com"
+            <Link
+              to={`interview/hashing`}
               className="font-thin font-inter text-lg "
             >
               Hashing
-            </a>
+            </Link>
           </div>
           <div className=" border-b-1 shadow-sm h-20 flex items-center justify-center">
-            <a
-              href="http://something.com"
+            <Link
+              to={`interview/linked-lists`}
               className="font-thin font-inter text-lg "
             >
               Linked Lists
-            </a>
+            </Link>
           </div>
           <div className=" border-b-1 shadow-sm h-20 flex items-center justify-center">
-            <a
-              href="http://something.com"
+            <Link
+              to={`interview/stacks-and-queues`}
               className="font-thin font-inter text-lg "
             >
               Stacks and Queues
-            </a>
+            </Link>
           </div>
           <div className=" border-b-1 shadow-sm h-20 flex items-center justify-center">
-            <a
-              href="http://something.com"
+            <Link
+              to={`interview/trees-and-graphs`}
               className="font-thin font-inter text-lg "
             >
               Trees and Graphs
-            </a>
+            </Link>
           </div>
           <div className=" border-b-1 shadow-sm h-20 flex items-center justify-center">
-            <a
-              href="http://something.com"
+            <Link
+              to={`interview/heaps`}
               className="font-thin font-inter text-lg "
             >
               Heaps
-            </a>
+            </Link>
           </div>
           <div className=" border-b-1 shadow-sm h-20 flex items-center justify-center">
-            <a
-              href="http://something.com"
+            <Link
+              to={`interview/greedy-algorithms`}
               className="font-thin font-inter text-lg "
             >
               Greedy Algorithms
-            </a>
+            </Link>
           </div>
           <div className=" border-b-1 shadow-sm h-20 flex items-center justify-center">
-            <a
-              href="http://something.com"
+            <Link
+              to={`/interview/binary-search`}
               className="font-thin font-inter text-lg "
             >
               Binary Search
-            </a>
+            </Link>
           </div>
           <div className=" border-b-1 shadow-sm h-20 flex items-center justify-center">
-            <a
-              href="http://something.com"
+            <Link
+              to={`interview/backtracking`}
               className="font-thin font-inter text-lg "
             >
               Backtracking
-            </a>
+            </Link>
           </div>
           <div className=" border-b-1 shadow-sm h-20 flex items-center justify-center">
-            <a
-              href="http://something.com"
+            <Link
+              to={`interview/dynamic-programming`}
               className="font-thin font-inter text-lg "
             >
               Dynamic Programming
-            </a>
+            </Link>
           </div>
         </div>
         <nav className=" col-span-4">
@@ -129,12 +129,12 @@ export default function Wrapper() {
               >
                 Home
               </a>
-              <a
-                href="http://something.com"
+              <Link
+                to={`insights`}
                 className="text-xl font-inter font-thin m-5"
               >
                 Insights
-              </a>
+              </Link>
               <a
                 href="http://something.com"
                 className="text-xl font-inter font-thin m-5"
