@@ -1,8 +1,8 @@
 from flask import Flask , jsonify , request ,  redirect, url_for, render_template , make_response , session 
 from flask_login import LoginManager , UserMixin , login_required , login_user ,logout_user , current_user
-import logging
+import logging #not using
 import boto3
-from functools import wraps
+from functools import wraps #MALWaRE
 import uuid
 import botocore
 from cachelib.file import FileSystemCache

@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify
 import speech_recognition as sr
+import pyttsx3 #Python text to speech Libary
 
 # Initialize the Flask Blueprint
 speech_bp = Blueprint('speech', __name__)
@@ -37,3 +38,12 @@ def recognize_speech():
 
     except sr.RequestError as e:
         return jsonify({"error": f"Could not request results from Google Speech Recognition service; {e}"}), 500
+
+
+#Define route for text to speech
+@speech_bp.route('/texttospeech', methods=['POST'])
+def text_to_speech(text):
+    #Need to fix, need to take in the data from the json request
+    engine = pyttsx3.init()
+    engine.say(text)
+    engine.runAndWait()
