@@ -1,4 +1,6 @@
 import React from "react";
+import axios from "axios";
+
 import {
   LineChart,
   CartesianGrid,
@@ -12,6 +14,10 @@ import {
 } from "recharts";
 
 export default function InterviewSkeleton() {
+
+  /*Write now each page is getting an placeholder confidence score from 
+
+  */
   const data = [
     {
       name: "",

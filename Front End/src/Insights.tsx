@@ -1,13 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { RadialBarChart, RadialBar, Legend, Tooltip } from "recharts";
-import { Grid, Item } from "@mui/material"; // Make sure 'Item' is imported correctly or styled accordingly
-import CardContent from "@mui/material/CardContent";
-import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
+import React, { useState } from "react";
+import { RadialBarChart, RadialBar, Tooltip } from "recharts";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+
+/**
+ * This is the Insights route on the platform. Contains the half circle score graphs.
+ */
 
 export default function Insights() {
   const navigate = useNavigate();
