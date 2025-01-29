@@ -186,7 +186,7 @@ def getConfidence():
                     "error":str(e) 
                 }) , 500
 
-
+#Sends user comnfidence score to dynamodb database
 @app.post('/api/postconfidence')
 @login_required
 def postconfidence():
