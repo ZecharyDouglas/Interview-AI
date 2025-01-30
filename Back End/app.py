@@ -17,6 +17,25 @@ from Blueprints.TextAnalysis.speech import speech_bp
 import os
 
 
+#Will act as the session that holds the current user information until 
+#a better method is found
+customSession = {
+    'name': " " ,
+    'email': " " ,
+    'user_id': " " ,
+    'occupation': " ",
+    'item_id': " "
+}
+'''
+Values:
+customSession['name'] =
+customSession['email'] =
+customSession['user_id'] =
+customSession['occupation'] =
+customSession['item_id'] =
+
+    '''
+
 #creates the app and then enables the CORS for all domains
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)
@@ -55,8 +74,11 @@ app.register_blueprint(transcript_bp, url_prefix = "/transcript")
 app.register_blueprint(speech_bp, url_prefix = "/speech")
 
 #getting the dynamodb service resource
+#This creates a new AWS session using a profile named 'default'
 aws_session = boto3.Session(profile_name='default')
+#This initializes a DynamoDB service resource in the region us-east-1.
 dynamodb = aws_session.resource('dynamodb', region_name='us-east-1')
+#This retrieves a reference to the "Users" table in DynamoDB.
 users = dynamodb.Table('Users')
 
 #test for listening
@@ -103,6 +125,12 @@ def signup():
             },
             ConditionExpression="attribute_not_exists(user_id)"
         )
+        #Add the values to the custom session object when the user signs up
+        customSession['name'] = name
+        customSession['email'] = email.lower()
+        customSession['user_id'] = email.lower() #The user_id is the email
+        customSession['occupation'] = occupoation
+        customSession['item_id'] = itemId
         return jsonify({
             'message':"User was created successfully"
         }) , 200
@@ -128,7 +156,17 @@ def signIn():
         response = users.query(KeyConditionExpression=Key('user_id').eq(email.lower()), FilterExpression=Attr('password').eq(password)
         )
         items = response['Items']
+
+        #Attempt to add the logged in user data to the custom session object
+        user_data = items[0]  # Get the first user (assuming unique user_id)
+        customSession['name'] = user_data.get('name', 'No Name Found')  # Extract 'name'
+        customSession['occupation'] = user_data.get('occupation', 'No Occupation Found')  # Extract 'occupation'
+        customSession['item_id'] = user_data.get('item_id', 'No Item ID Found')
+        customSession['user_id'] = user_data.get('user_id', 'No User ID Found')
+        #There is no email column in the database
+        #customSession['email'] = user_data.get('email', 'No email Found')
         print(items)
+        print(customSession)
         if (len(items)>0):
             user= User(email=email.lower())
             login_user(user)
@@ -224,7 +262,64 @@ def postconfidence():
 @login_required
 def logoutUser():
     logout_user()
+    #Logs the user out/clears the customSession object
+    customSession = {
+    'name': " " ,
+    'email': " " ,
+    'user_id': " " ,
+    'occupation': " ",
+    'item_id': " "
+    }
     return jsonify({"message":"User sucessfully logged out."} , 200)
+
+
+#Gets all of the user info by the name value in the customSession object
+@app.get("/api/testgetbyname")
+def getbyname():
+    try:
+        my_response = users.scan(
+            FilterExpression=Attr('name').eq(customSession['name'])  # Searches for name "Steffan"
+        )
+
+        items = my_response.get('Items', [])
+        if items:
+            return jsonify(items), 200
+        else:
+            return jsonify({"error": "No user found with this name"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+'''
+The @app.get("/api/testgetbyname") returns:
+ {
+        "item_id": "04ddecb9-8528-42e2-8998-bfc469cb6e9c",
+        "name": "Steffan",
+        "occupation": "student",
+        "password": "Burnette",
+        "user_id": "burnette"
+    }
+'''
+
+#Call to update the users occupation, only need to input:
+#"new_occupation":"the new value"
+@app.route("/api/updateuser", methods = ['POST'])
+def update_user():
+    try:
+        data = request.get_json()  # Get JSON data from request
+
+        new_occupation = data.get('new_occupation')
+        # Correct Key structure
+        users.update_item(
+            Key={'user_id': customSession['user_id'], 'item_id': customSession['item_id']},
+            UpdateExpression="SET occupation = :occ",
+            ExpressionAttributeValues={':occ': new_occupation}
+        )
+
+        return jsonify({"message": "User occupation updated successfully"}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
     
 # @app.after_request
 # def add_cors_headers(response):
@@ -240,3 +335,20 @@ def logoutUser():
 
 if __name__ == '__main__':
     app.run(debug=True, host='127.0.0.1', port=5000)
+
+#user_id - The partition key
+#item_id - The sort key
+
+'''
+Columns in the db:
+- user_id (string)
+- item_id (string)
+- confidence_value (int)
+- entry_time
+- interview_feedback (string)
+- interview_topic (string)
+- interview_transcript (string)
+- name (string)
+- occupation (string)
+- password (string)
+'''
