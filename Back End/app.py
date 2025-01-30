@@ -58,7 +58,8 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "/signin"
 
-
+#Can appearently use to store all of the credentials needed from the user to use
+#in querying statements
 class User(UserMixin):
     def __init__(self, email):
         self.id = email
