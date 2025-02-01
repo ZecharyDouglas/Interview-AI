@@ -196,6 +196,7 @@ def signIn():
 @app.get('/api/getconfidenceall')
 @login_required
 def getConfidence():
+   
     email =  current_user.id
     print(f"This is the current user{email}")
     if not email :
@@ -319,6 +320,8 @@ def update_user():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
 
 
     
