@@ -17,7 +17,25 @@ function HomePage() {
   //   client.models.Todo.create({ content: window.prompt("Todo content") });
   // }
 
-  return <main>{/* <Outlet /> */}</main>;
+  return <main>{<>
+
+  <p>This is the home page.</p>
+  
+  </>}</main>;
 }
 
 export default HomePage;
+
+/**
+ * Columns in the db:
+- user_id (string)
+- item_id (string)
+- confidence_value (int)
+- entry_time
+- interview_feedback (string)
+- interview_topic (string)
+- interview_transcript (string)
+- name (string)
+- occupation (string)
+- password (string)
+ */

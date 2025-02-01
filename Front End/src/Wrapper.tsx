@@ -164,12 +164,12 @@ export default function Wrapper() {
             <img src={Owl} className=" ml-5 h-10 w-10" />
 
             <div className="">
-              <a
-                href="http://something.com"
+              <Link
+                to={`home`}
                 className=" text-xl font-inter font-thin m-5"
               >
                 Home
-              </a>
+              </Link>
               <Link
                 to={`insights`}
                 className="text-xl font-inter font-thin m-5"

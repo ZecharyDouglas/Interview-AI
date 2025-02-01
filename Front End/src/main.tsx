@@ -14,6 +14,7 @@ import Wrapper from "./Wrapper.tsx";
 import Insights from "./Insights.tsx";
 import InterviewSkeleton from "./helper components/InterviewSkeleton.tsx";
 import PrivateRoute from "./helper components/PrivateRoute.tsx";
+import HomePage from "./Homepage.tsx"
 
 const router = createBrowserRouter([
   {
@@ -26,6 +27,7 @@ const router = createBrowserRouter([
     children: [
       { path: "/insights", element: <Insights /> },
       { path: "/interview/:id", element: <InterviewSkeleton /> },
+      { path: "home", element: <HomePage /> },
     ],
     errorElement: <RouteError />,
   },
@@ -39,6 +41,7 @@ const router = createBrowserRouter([
     element: <SignUp />,
     errorElement: <RouteError />,
   },
+ 
   {
     path: "/error-401",
     element: <RouteErrorSignIn />,

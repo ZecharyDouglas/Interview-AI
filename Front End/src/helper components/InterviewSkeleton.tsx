@@ -15,7 +15,7 @@ import {
 
 export default function InterviewSkeleton() {
 
-  /*Write now each page is getting an placeholder confidence score from 
+  /*Right now each page is getting an placeholder confidence score from 
 
   */
   const data = [
