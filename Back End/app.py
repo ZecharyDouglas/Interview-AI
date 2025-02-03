@@ -1,4 +1,4 @@
-from flask import Flask , jsonify , request ,  redirect, url_for, render_template , make_response , session 
+from flask import Flask , jsonify , request ,  redirect, url_for, render_template , make_response , session , flash , redirect
 from flask_login import LoginManager , UserMixin , login_required , login_user ,logout_user , current_user
 import logging #not using
 import boto3
@@ -61,12 +61,26 @@ login_manager.login_view = "/signin"
 #Can appearently use to store all of the credentials needed from the user to use
 #in querying statements
 class User(UserMixin):
-    def __init__(self, email):
+    def __init__(self, email , name=None , occupation=None):
         self.id = email
+        self.name = name
+        self.occupation =occupation
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User(email=user_id)
+    # Fetch user data from the database based on user_id
+    response = users.query(KeyConditionExpression=Key('user_id').eq(user_id))
+    items = response.get('Items', [])
+
+    if not items:
+        return None
+   
+    user_data = items[0]
+    return User(
+        email=user_id,
+        name=user_data.get('name'),
+        occupation=user_data.get('occupation')
+    )
     
 
 #Loads in the routes in the blueprint
@@ -130,7 +144,7 @@ def signup():
         customSession['name'] = name
         customSession['email'] = email.lower()
         customSession['user_id'] = email.lower() #The user_id is the email
-        customSession['occupation'] = occupoation
+        customSession['occupation'] = occupation
         customSession['item_id'] = itemId
         return jsonify({
             'message':"User was created successfully"
@@ -160,16 +174,18 @@ def signIn():
 
         #Attempt to add the logged in user data to the custom session object
         user_data = items[0]  # Get the first user (assuming unique user_id)
-        customSession['name'] = user_data.get('name', 'No Name Found')  # Extract 'name'
-        customSession['occupation'] = user_data.get('occupation', 'No Occupation Found')  # Extract 'occupation'
-        customSession['item_id'] = user_data.get('item_id', 'No Item ID Found')
-        customSession['user_id'] = user_data.get('user_id', 'No User ID Found')
+        # customSession['name'] = user_data.get('name', 'No Name Found')  # Extract 'name'
+        # customSession['occupation'] = user_data.get('occupation', 'No Occupation Found')  # Extract 'occupation'
+        # customSession['item_id'] = user_data.get('item_id', 'No Item ID Found')
+        # customSession['user_id'] = user_data.get('user_id', 'No User ID Found')
+        name = user_data.get('name', 'No Name Found')  # Extract 'name'
+        occupation = user_data.get('occupation', 'No Occupation Found')  # Extract 'occupation'
         #There is no email column in the database
         #customSession['email'] = user_data.get('email', 'No email Found')
         print(items)
         print(customSession)
         if (len(items)>0):
-            user= User(email=email.lower())
+            user= User(email=email.lower() , name=name , occupation=occupation)
             login_user(user)
             #session['user_id'] = email.lower()
             #print(session)
