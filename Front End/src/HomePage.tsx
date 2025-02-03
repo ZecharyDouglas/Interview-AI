@@ -19,7 +19,7 @@ function HomePage() {
 
   return <main>{<>
 
-  <p>This is the home page.</p>
+  <p>This is the home page. Might add modals to handle the functionality.</p>
   
   </>}</main>;
 }
