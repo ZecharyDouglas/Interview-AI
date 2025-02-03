@@ -27,7 +27,7 @@ customSession = {
     'item_id': " "
 }
 '''
-Values:
+Values:   
 customSession['name'] =
 customSession['email'] =
 customSession['user_id'] =
