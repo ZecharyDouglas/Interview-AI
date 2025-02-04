@@ -25,6 +25,23 @@ prompt = PromptTemplate(
 # Create a chain that takes the prompt and LLM
 chain = LLMChain(prompt=prompt, llm=llm)
 
+# Create a prompt template for generating an interview transcript.
+interview_template = """You are a helpful AI assistant tasked with generating a mock technical interview on the topic of {topic}. 
+Please provide a detailed transcript that includes several realistic interview questions and corresponding candidate responses. 
+Ensure the transcript is insightful and reflective of common interview scenarios."""
+interview_prompt = PromptTemplate(input_variables=["topic"], template=interview_template)
+interview_chain = LLMChain(prompt=interview_prompt, llm=llm)
+
+
+# Advice prompt and chain
+advice_template = """You are a helpful AI assistant with the main task of assessing the end users performance during said mock interview. The end user will have participated in a mock interview and you will be given the transcript. When looking at the transcript be sure to look for:
+- Confidence in response. You want to make sure that the end user is coming off as confident in their responses.
+- Redundancy. You want to make sure that the end user is not repeating themselves or explaining the same thing over and over again unless prompted to elaborate or asked to repeat.
+- Growth. Look for areas of improvement. Look for any other potential weakness that the end user might have exhibited in the interview, highlight them in the response and give the end user tips on ways in which it can improve its responses.
+Overall, for your response to the end user I want you to provide them with constructive feedback that can be used to help improve their performance on future interviews. Here is the transcribed interview: {question}"""
+advice_prompt = PromptTemplate(input_variables=["question"], template=advice_template)
+chain = LLMChain(prompt=advice_prompt, llm=llm)
+
 
 
 
@@ -35,6 +52,7 @@ transcript_bp = Blueprint("transcript", __name__)
 
 #Here are the routes/endpoints in the transcript_bp Blueprint
 
+'''
 #This route will return advice for the end user based on the interview
 @transcript_bp.route("/advice", methods=['POST'])  # Allow POST method
 def advice_response():
@@ -55,9 +73,9 @@ def advice_response():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+'''
 
-
-# Create a prompt template
+# Create a prompt template for confidence score
 confidence_template = """You are a helpful AI assistant with the main task of assessing the end users performance during said mock interview.
 The end user will have participated in a mock interview and you will be given the transcript. I want you to return ONLY a rating (from 1 -5) with 1 being a poor performance and 5 being an outstanding performance.
 Your output should look like: 1 for instance. Here is the transcript: {question}"""
@@ -84,6 +102,39 @@ def confidence_response():
         
         # Return the final response
         return jsonify({"response": final_confidence_score}), 200
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@transcript_bp.route("/generateInterview", methods=['POST'])
+def generate_interview():
+    try:
+        data = request.get_json()  # Get JSON data from the request
+        topic = data.get('topic')
+        
+        if not topic:
+            return jsonify({"error": "No topic provided"}), 400
+        
+        # Generate the interview transcript using the interview_chain
+        interview_transcript = interview_chain.run(topic=topic)
+        
+        return jsonify({"interviewTranscript": interview_transcript}), 200
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@transcript_bp.route("/advice", methods=['POST'])
+def advice_response():
+    try:
+        data = request.get_json()
+        user_prompt = data.get('user_prompt')
+        
+        if not user_prompt:
+            return jsonify({"error": "No user_prompt provided"}), 400
+        
+        final_response = chain.run(user_prompt)
+        return jsonify({"response": final_response}), 200
     
     except Exception as e:
         return jsonify({"error": str(e)}), 500

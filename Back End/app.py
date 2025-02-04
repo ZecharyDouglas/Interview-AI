@@ -338,7 +338,51 @@ def update_user():
         return jsonify({"error": str(e)}), 500
 
 
+@app.post('/api/putInterviewData')
+@login_required
+def put_interview_data():
+    """
+    Endpoint to store interview data into the DynamoDB table.
+    Expected JSON input:
+    {
+      "interview_topic": "The topic of the interview",
+      "interview_transcript": "The full transcript of the interview",
+      "interview_feedback": "Feedback provided by the assessment model",
+      "confidence_value": 3    // Optional: Confidence rating (1-5)
+    }
+    """
+    data = request.get_json()
 
+    # Extract data from the request
+    interview_topic = data.get('interview_topic')
+    interview_transcript = data.get('interview_transcript')
+    interview_feedback = data.get('interview_feedback')
+    confidence_value = data.get('confidence_value')  # This could be None if not provided
+
+    # Validate required fields
+    if not all([interview_topic, interview_transcript, interview_feedback]):
+        return jsonify({"error": "Missing one or more required fields"}), 400
+
+    entry_time = datetime.now().isoformat()
+    item_id = str(uuid.uuid4())  # Generate a unique UUID for the item_id
+
+    try:
+        # Put the item into the DynamoDB table 'Users'
+        users.put_item(
+            Item={
+                'user_id': current_user.id,  # Use the logged-in user's id (typically email)
+                'item_id': item_id,
+                'interview_topic': interview_topic,
+                'interview_transcript': interview_transcript,
+                'interview_feedback': interview_feedback,
+                'confidence_value': confidence_value,
+                'entry_time': entry_time,
+            }
+        )
+        return jsonify({"message": "Interview data was successfully uploaded"}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
     
 # @app.after_request
