@@ -13,7 +13,7 @@ function HomePage() {
   const [userResponse, setUserResponse] = useState("");
   const [feedback, setFeedback] = useState("");
 
-  // Toggle the modal visibility
+  // Toggles the modal visibility 
   const toggleModal = () => {
     setModal(!modal);
   };
